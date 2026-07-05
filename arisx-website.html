@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArisX — Debt resolution, built pull-based</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,450;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16213A;
+    --paper:#F0EEE4;
+    --rule:#D8D3C4;
+    --amber:#B8863E;
+    --settle:#2F5233;
+    --paper-2:#E7E3D4;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:26px;height:1px;
+    background:var(--amber);
+    display:inline-block;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif;font-weight:600;letter-spacing:-0.01em;}
+  .rule{border:none;border-top:1px solid var(--rule);}
+
+  /* NAV */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(240,238,228,0.88);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--rule);
+  }
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;max-width:1080px;margin:0 auto;}
+  .logo{font-family:'Fraunces',serif;font-weight:700;font-size:22px;letter-spacing:-0.02em;}
+  .logo span{color:var(--amber);}
+  nav ul{list-style:none;display:flex;gap:34px;font-size:14.5px;}
+  nav ul a{text-decoration:none;opacity:0.75;transition:opacity .2s;}
+  nav ul a:hover{opacity:1;}
+  .nav-cta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    border:1px solid var(--ink);
+    padding:8px 16px;
+    text-decoration:none;
+    transition:background .2s,color .2s;
+  }
+  .nav-cta:hover{background:var(--ink);color:var(--paper);}
+
+  /* HERO */
+  .hero{padding:96px 0 80px;position:relative;}
+  .hero h1{
+    font-size:clamp(38px,6vw,64px);
+    line-height:1.05;
+    max-width:820px;
+  }
+  .hero h1 em{font-style:italic;color:var(--amber);}
+  .hero-sub{
+    max-width:560px;
+    font-size:18px;
+    color:#3A4258;
+    margin-top:24px;
+  }
+  .hero-ctas{display:flex;gap:16px;margin-top:40px;flex-wrap:wrap;}
+  .btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px;
+    padding:14px 24px;
+    text-decoration:none;
+    display:inline-block;
+    border:1px solid var(--ink);
+  }
+  .btn-solid{background:var(--ink);color:var(--paper);}
+  .btn-solid:hover{background:var(--settle);border-color:var(--settle);}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper);}
+
+  /* STAT STRIP */
+  .stat-strip{
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    padding:36px 0;
+  }
+  .stat-strip .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .stat{font-family:'IBM Plex Mono',monospace;}
+  .stat b{display:block;font-size:26px;color:var(--ink);font-weight:500;}
+  .stat span{font-size:12px;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;}
+
+  section{padding:88px 0;}
+  .section-head{max-width:640px;margin-bottom:56px;}
+  .section-head h2{font-size:clamp(28px,4vw,40px);}
+  .section-head p{margin-top:16px;color:#3A4258;font-size:17px;max-width:560px;}
+
+  /* PROBLEM */
+  .problem-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:start;}
+  .problem-copy p{color:#3A4258;margin-bottom:16px;}
+  .problem-list{list-style:none;}
+  .problem-list li{
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    display:flex;gap:20px;
+  }
+  .problem-list li:last-child{border-bottom:1px solid var(--rule);}
+  .problem-num{font-family:'IBM Plex Mono',monospace;color:var(--amber);font-size:13px;padding-top:2px;}
+  .problem-list h4{font-family:'IBM Plex Sans';font-weight:600;font-size:15.5px;margin-bottom:4px;}
+  .problem-list p{font-size:14.5px;color:#5B6275;}
+
+  /* BELIEF / SIGNATURE DIAGRAM */
+  .belief{background:var(--ink);color:var(--paper);}
+  .belief .eyebrow{color:#D9B871;}
+  .belief .eyebrow::before{background:#D9B871;}
+  .belief h2{color:var(--paper);}
+  .belief h2{color:#FFFFFF;}
+  .belief-sub{max-width:600px;color:#FFFFFF;font-size:17px;margin-top:16px;}
+  .belief-visual-wrap{margin-top:64px;display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;}
+  .belief-visual-wrap svg text{font-family:'IBM Plex Mono',monospace;}
+  .belief-caption{font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-transform:uppercase;letter-spacing:0.06em;color:#9AA0B4;text-align:center;margin-top:10px;}
+  .belief-note{color:#FFFFFF;font-size:15px;}
+  .belief-note strong{display:block;font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin-bottom:10px;}
+  .rope{animation:tug 2.6s ease-in-out infinite;transform-origin:center;}
+  .rope:nth-child(2){animation-delay:.3s;}
+  .rope:nth-child(4){animation-delay:.6s;}
+  .rope:nth-child(6){animation-delay:.9s;}
+  @keyframes tug{0%,100%{stroke-width:2;}50%{stroke-width:3;}}
+  .stress{animation:flicker 1.8s ease-in-out infinite;}
+  @keyframes flicker{0%,100%{opacity:.4;}50%{opacity:1;}}
+  @media (prefers-reduced-motion: reduce){
+    .rope,.stress{animation:none;}
+  }
+  .diagram-wrap{margin-top:64px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+  .diagram-caption{font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-transform:uppercase;letter-spacing:0.08em;color:#9AA0B4;text-align:center;margin-top:14px;}
+  svg text{font-family:'IBM Plex Mono',monospace;}
+  .diagram-note{color:#C7CBDA;font-size:15px;}
+  .diagram-note strong{color:var(--paper);display:block;font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin-bottom:10px;}
+  .path{stroke-dasharray:400;stroke-dashoffset:400;transition:stroke-dashoffset 1.4s ease;}
+  .diagram-wrap.revealed .path{stroke-dashoffset:0;}
+  .diagram-wrap.revealed .node,.diagram-wrap.revealed .stamp{opacity:1;transform:translateY(0);}
+  .node,.stamp{opacity:0;transform:translateY(6px);transition:opacity .6s ease, transform .6s ease;}
+
+  /* PRODUCT */
+  .product-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+  .product-grid.three{grid-template-columns:repeat(3,1fr);}
+  .pcard-copy{font-size:14.5px;color:#5B6275;}
+  .product-card.dark .pcard-copy{color:#D3D7E4;}
+  .product-card{
+    border:1px solid var(--rule);
+    padding:40px 36px;
+    background:var(--paper-2);
+  }
+  .product-card.dark{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .product-card .tag{font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);}
+  .product-card h3{font-size:24px;margin-top:14px;margin-bottom:20px;}
+  .product-card ul{list-style:none;}
+  .product-card li{
+    padding:14px 0;
+    border-top:1px solid var(--rule);
+    font-size:15px;
+  }
+  .product-card.dark li{border-top:1px solid #2E3853;color:#D3D7E4;}
+  .product-card li b{display:block;color:var(--ink);font-family:'Fraunces',serif;font-size:16.5px;font-weight:600;margin-bottom:3px;}
+  .product-card.dark li b{color:var(--paper);}
+
+  /* HOW IT WORKS */
+  .steps{counter-reset:step;}
+  .step{
+    display:grid;grid-template-columns:64px 1fr;gap:24px;
+    padding:32px 0;border-top:1px solid var(--rule);
+  }
+  .step:last-child{border-bottom:1px solid var(--rule);}
+  .step-num{font-family:'Fraunces',serif;font-size:34px;font-weight:300;color:var(--amber);}
+  .step h4{font-size:19px;margin-bottom:8px;}
+  .step p{color:#3A4258;font-size:15px;max-width:640px;}
+  .step .tl{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#6B7280;margin-top:10px;}
+
+  /* TRACTION */
+  .traction{background:var(--paper-2);}
+  .case-card{
+    border:1px solid var(--rule);
+    background:var(--paper);
+    padding:44px;
+    margin-bottom:56px;
+  }
+  .case-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-bottom:36px;}
+  .case-meta span{display:block;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6B7280;text-transform:uppercase;letter-spacing:0.06em;}
+  .case-meta b{font-family:'Fraunces',serif;font-size:22px;font-weight:600;}
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+  .metric-title{font-family:'IBM Plex Mono',monospace;font-size:12.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--amber);margin-bottom:16px;}
+  .metric-row{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;}
+  .metric-row .wk{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6B7280;width:56px;}
+  .metric-row .val{font-family:'Fraunces',serif;font-size:22px;font-weight:600;}
+  .metric-row .val.up{color:var(--settle);}
+  .metric-delta{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--settle);}
+
+  .roster{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin-bottom:28px;}
+  .roster-col{background:var(--paper);padding:24px;}
+  .roster-col h5{font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--amber);margin-bottom:16px;}
+  .roster-col ul{list-style:none;}
+  .roster-col li{font-family:'Fraunces',serif;font-size:15.5px;font-weight:500;padding:8px 0;border-top:1px solid var(--rule);}
+  .roster-col li:first-child{border-top:none;}
+  .roster-note{font-size:12px;color:#6B7280;margin-top:14px;font-style:italic;}
+  .roster-bar{display:flex;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);border-top:1px solid var(--rule);padding-top:20px;}
+  .roster-bar div{flex:1;min-width:180px;padding:6px 16px 6px 0;}
+  .roster-bar b{display:block;font-size:16px;color:var(--settle);}
+
+  /* TEAM */
+  .team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px;max-width:760px;}
+  .team-card{border:1px solid var(--rule);background:var(--paper-2);padding:32px 32px 28px;}
+  .team-card .role{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;}
+  .team-copy{font-size:15px;color:#3A4258;line-height:1.65;}
+  .badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:44px;}
+  .badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    border:1px solid var(--rule);
+    padding:8px 16px;
+    color:var(--ink);
+    background:var(--paper);
+  }
+  .badge-label{font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:0.06em;color:#6B7280;margin-bottom:14px;}
+  .hiring-callout{
+    margin-top:56px;
+    padding:32px 36px;
+    border-left:3px solid var(--amber);
+    background:var(--paper-2);
+    display:flex;
+    align-items:center;
+    gap:28px;
+    flex-wrap:wrap;
+  }
+  .hiring-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);white-space:nowrap;}
+  .hiring-callout p{flex:1;min-width:240px;font-size:15.5px;color:var(--ink);}
+  .hiring-callout .btn{white-space:nowrap;}
+  .team-card{border-top:1px solid var(--rule);padding-top:24px;}
+  .avatar{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-size:20px;margin-bottom:20px;
+  }
+  .team-card h4{font-size:19px;margin-bottom:2px;}
+  .team-card .role{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px;}
+  .team-card ul{list-style:none;font-size:14.5px;color:#3A4258;}
+  .team-card li{padding:4px 0;}
+
+  /* CTA / FOOTER */
+  .cta-band{background:var(--ink);color:var(--paper);text-align:center;padding:110px 0;}
+  .cta-band h2{color:var(--paper);font-size:clamp(30px,5vw,46px);max-width:720px;margin:0 auto 40px;}
+  .cta-band p{color:#C7CBDA;max-width:480px;margin:0 auto 36px;}
+  .cta-band .btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+  .btn-big{font-size:16px;padding:20px 40px;letter-spacing:0.04em;}
+  .cta-sub{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#9AA0B4;margin-top:24px;}
+  .cta-sub a{text-decoration:underline;text-underline-offset:3px;}
+  .btn-inverse{background:var(--paper);color:var(--ink);border-color:var(--paper);}
+  .btn-inverse:hover{background:var(--amber);border-color:var(--amber);color:var(--paper);}
+  .btn-outline-light{border-color:var(--paper);color:var(--paper);}
+  .btn-outline-light:hover{background:var(--paper);color:var(--ink);}
+
+  footer{padding:40px 0;border-top:1px solid var(--rule);}
+  .footer-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;font-size:14px;color:#6B7280;}
+  .footer-row a{text-decoration:none;color:var(--ink);}
+
+  @media (max-width:820px){
+    .problem-grid,.diagram-wrap,.belief-visual-wrap,.product-grid,.metrics,.team-grid{grid-template-columns:1fr;}
+    .stat-strip .wrap{grid-template-columns:1fr 1fr;}
+    .roster{grid-template-columns:1fr 1fr;}
+    nav ul{display:none;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .path,.node,.stamp{transition:none;stroke-dashoffset:0;opacity:1;transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">Aris<span>X</span></div>
+    <ul>
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#belief">Belief</a></li>
+      <li><a href="#product">Solution</a></li>
+      <li><a href="#traction">Traction</a></li>
+      <li><a href="#team">Team</a></li>
+    </ul>
+    <a class="nav-cta" href="mailto:info@arisx.in">Talk to us →</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Debt resolution platform</div>
+    <h1>Collections built <em>pull</em>-based, <br>not push-based.</h1>
+    <p class="hero-sub">We're co-building a debt resolution platform with leading banks, NBFCs and ARCs — replacing 100 fragmented recovery calls with one coordinated, self-serve path to settlement.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-solid" href="mailto:info@arisx.in">For banks &amp; ARCs</a>
+      <a class="btn btn-ghost" href="#belief">Our belief</a>
+    </div>
+  </div>
+</section>
+
+<div class="stat-strip">
+  <div class="wrap">
+    <div class="stat"><b>₹1,500 Cr</b><span>Portfolio managed</span></div>
+    <div class="stat"><b>2.2%</b><span>PTP rate achieved on 1,000+ DPD customers</span></div>
+    <div class="stat"><b>33%</b><span>Right party contact rate</span></div>
+  </div>
+</div>
+
+<section id="problem">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The problem</div>
+      <h2>Collections wears customers down instead of resolving them.</h2>
+    </div>
+    <ul class="problem-list">
+      <li>
+        <span class="problem-num">01</span>
+        <div><h4>Infinite calls, infinite haggling</h4><p>Endless calls and messages turn even a high-intent customer into a low-intent one.</p></div>
+      </li>
+      <li>
+        <span class="problem-num">02</span>
+        <div><h4>No path to clear progressively</h4><p>Customers can't settle their loans step by step — it's lump-sum or nothing.</p></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="belief" id="belief">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Our belief</div>
+      <h2>Pull, not push, structurally improves collections efficiency.</h2>
+      <p class="belief-sub">Five different agents call the same customer whenever they happen to connect, each starting the conversation from zero, with zero context carried over — leaving the chance of resolution down to luck, not design.</p>
+    </div>
+    <div class="belief-visual-wrap">
+      <div>
+        <svg viewBox="0 0 400 320" width="100%" height="auto" aria-label="Illustration of four collection agents pulling one overwhelmed customer in different directions at once">
+          <defs>
+            <marker id="arrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#B8863E"/>
+            </marker>
+          </defs>
+
+          <text x="18" y="30" fill="#9AA0B4" font-size="11">Agent 1</text>
+          <circle cx="50" cy="40" r="4" fill="#8B93A8"/>
+          <line class="rope" x1="178" y1="160" x2="50" y2="40" stroke="#B8863E" stroke-width="2" marker-end="url(#arrowGold)"/>
+
+          <text x="315" y="30" fill="#9AA0B4" font-size="11">Agent 2</text>
+          <circle cx="350" cy="40" r="4" fill="#8B93A8"/>
+          <line class="rope" x1="222" y1="160" x2="350" y2="40" stroke="#B8863E" stroke-width="2" marker-end="url(#arrowGold)"/>
+
+          <text x="16" y="308" fill="#9AA0B4" font-size="11">Agent 3</text>
+          <circle cx="50" cy="290" r="4" fill="#8B93A8"/>
+          <line class="rope" x1="188" y1="216" x2="50" y2="290" stroke="#B8863E" stroke-width="2" marker-end="url(#arrowGold)"/>
+
+          <text x="315" y="308" fill="#9AA0B4" font-size="11">Agent 4</text>
+          <circle cx="350" cy="290" r="4" fill="#8B93A8"/>
+          <line class="rope" x1="212" y1="216" x2="350" y2="290" stroke="#B8863E" stroke-width="2" marker-end="url(#arrowGold)"/>
+
+          <path class="stress" d="M188,108 L181,96" stroke="#B8863E" stroke-width="2" stroke-linecap="round"/>
+          <path class="stress" d="M200,104 L200,90" stroke="#B8863E" stroke-width="2" stroke-linecap="round"/>
+          <path class="stress" d="M212,108 L219,96" stroke="#B8863E" stroke-width="2" stroke-linecap="round"/>
+
+          <circle cx="200" cy="130" r="16" fill="#F0EEE4"/>
+          <path d="M180,150 Q200,140 220,150 L214,196 Q200,206 186,196 Z" fill="#F0EEE4"/>
+          <line x1="180" y1="150" x2="178" y2="160" stroke="#F0EEE4" stroke-width="4" stroke-linecap="round"/>
+          <line x1="220" y1="150" x2="222" y2="160" stroke="#F0EEE4" stroke-width="4" stroke-linecap="round"/>
+          <line x1="186" y1="196" x2="188" y2="216" stroke="#F0EEE4" stroke-width="4" stroke-linecap="round"/>
+          <line x1="214" y1="196" x2="212" y2="216" stroke="#F0EEE4" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="belief-caption">One customer, four uncoordinated pulls</div>
+      </div>
+      <div class="belief-note">
+        <strong>Pulled four different ways, resolved by none.</strong>
+        <p>When every agent starts from zero and pulls toward their own script, the customer isn't being helped toward a plan — they're being stretched between five conversations that don't know about each other. Coordination isn't a nicety here; it's what turns that same pull into a resolution.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="product">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Our solution</div>
+      <h2>One platform, three parts.</h2>
+    </div>
+    <div class="product-grid three">
+      <div class="product-card dark">
+        <div class="tag">01 · For lenders</div>
+        <h3>Back-office automation</h3>
+        <p class="pcard-copy">For banks, NBFCs and ARCs — built into allocation, settlement approval, and document management, so every conversation reconciles against your systems.</p>
+      </div>
+      <div class="product-card dark">
+        <div class="tag">02 · For customers</div>
+        <h3>Self-serve portal</h3>
+        <p class="pcard-copy">A single place for customers to view their offer, agree a progressive plan, and settle — without another call or branch visit.</p>
+      </div>
+      <div class="product-card dark">
+        <div class="tag">03 · For adoption</div>
+        <h3>Educational campaigns</h3>
+        <p class="pcard-copy">Outreach that explains the plan and builds trust before the ask — so the first conversation moves toward resolution, not haggling.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="traction" id="traction">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Case study</div>
+      <h2>What three weeks did for one ARC's write-off book</h2>
+    </div>
+
+    <div class="case-card">
+      <div class="case-top">
+        <div class="case-meta"><span>Portfolio</span><b>100,000 accounts</b></div>
+        <div class="case-meta"><span>Avg. DPD</span><b>1,000+ days</b></div>
+        <div class="case-meta"><span>Avg. ticket size</span><b>₹75,000</b></div>
+        <div class="case-meta"><span>Window</span><b>3 weeks, connected pool</b></div>
+      </div>
+      <div class="metrics">
+        <div>
+          <div class="metric-title">Right party contact</div>
+          <div class="metric-row"><span class="wk">Week 1</span><span class="val">15%</span></div>
+          <div class="metric-row"><span class="wk">Week 2</span><span class="val">25%</span></div>
+          <div class="metric-row"><span class="wk">Week 3</span><span class="val up">27%</span></div>
+          <div class="metric-delta">↑ +80%, improving week on week</div>
+        </div>
+        <div>
+          <div class="metric-title">Promise to pay</div>
+          <div class="metric-row"><span class="wk">Week 1</span><span class="val">1.2%</span></div>
+          <div class="metric-row"><span class="wk">Week 2</span><span class="val">2.0%</span></div>
+          <div class="metric-row"><span class="wk">Week 3</span><span class="val up">2.2%</span></div>
+          <div class="metric-delta">↑ +83%, improving week on week</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="team">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Team</div>
+      <h2>Founded by a team from IIT, IIM, BCG, Microsoft, Axis Bank and ICICI.</h2>
+    </div>
+    <div class="badge-label">Backed by pedigree across banking and technology</div>
+    <div class="badge-row">
+      <span class="badge">BCG</span>
+      <span class="badge">Microsoft AI/ML</span>
+      <span class="badge">Axis Bank</span>
+      <span class="badge">ICICI</span>
+      <span class="badge">IIT</span>
+      <span class="badge">IIM Bangalore</span>
+      <span class="badge">GSoC &amp; Open Source</span>
+      <span class="badge">ACM-ICPC</span>
+      <span class="badge">20+ yrs collections domain expertise</span>
+    </div>
+    <div class="hiring-callout">
+      <div class="hiring-tag">We're hiring</div>
+      <p>We're looking for people who move fast and love building in this new world — where collections gets rebuilt from the ground up with AI.</p>
+      <a class="btn btn-ghost" href="mailto:info@arisx.in">Get in touch →</a>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center;color:#D9B871;">Now onboarding</div>
+    <h2>We're onboarding a small number of customers into the next phase of the debt resolution platform.</h2>
+    <div class="btns">
+      <a class="btn btn-inverse btn-big" href="mailto:info@arisx.in">Contact us →</a>
+    </div>
+    <p class="cta-sub"><a href="mailto:info@arisx.in">info@arisx.in</a> · <a href="tel:9110983968">9110983968</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap footer-row">
+    <div>© 2026 Arion Analytics Private Limited (ArisX)</div>
+    <div><a href="mailto:info@arisx.in">info@arisx.in</a> · <a href="tel:9110983968">9110983968</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
